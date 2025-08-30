@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduStream - Online Secondary School Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .live-indicator { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .notification-badge { animation: bounce 1s infinite; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+</style>
+</head>
+<body class="bg-gray-50">
+<!-- Login/Registration Modal -->
+<div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+<div class="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+<div class="text-center mb-6">
+<h2 class="text-3xl font-bold text-gray-900">🎓 EduStream</h2>
+<p class="text-gray-600 mt-2">Online Secondary School Platform</p>
+</div>
+
+<div class="mb-6">
+<div class="flex bg-gray-100 rounded-lg p-1">
+<button id="loginTab" class="flex-1 py-2 px-4 rounded-md bg-white shadow-sm font-medium text-indigo-600">Login</button>
+<button id="registerTab" class="flex-1 py-2 px-4 rounded-md font-medium text-gray-600">Register</button>
+</div>
+</div>
+
+<!-- Login Form -->
+<div id="loginForm">
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">User Type</label>
+<select id="loginUserType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+<option value="student">Student</option>
+<option value="teacher">Teacher</option>
+<option value="admin">Administrator</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Email/Student ID</label>
+<input type="text" id="loginEmail" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Enter your email or student ID">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+<input type="password" id="loginPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Enter your password">
+</div>
+<button type="button" onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">Sign In</button>
+</form>
+</div>
+
+<!-- Registration Form -->
+<div id="registerForm" class="hidden">
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">User Type</label>
+<select id="regUserType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+<option value="student">Student</option>
+<option value="teacher">Teacher</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+<input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="First name">
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+<input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Last name">
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+<input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="your@email.com">
+</div>
+<div id="studentFields">
+<label class="block text-sm font-medium text-gray-700 mb-1">Class Level</label>
+<select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+<option value="jss1">JSS 1</option>
+<option value="jss2">JSS 2</option>
+<option value="jss3">JSS 3</option>
+<option value="sss1">SSS 1</option>
+<option value="sss2">SSS 2</option>
+<option value="sss3">SSS 3</option>
+</select>
+</div>
+<div id="teacherFields" class="hidden">
+<label class="block text-sm font-medium text-gray-700 mb-1">Subject Specialization</label>
+<select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+<option value="mathematics">Mathematics</option>
+<option value="english">English Language</option>
+<option value="physics">Physics</option>
+<option value="chemistry">Chemistry</option>
+<option value="biology">Biology</option>
+<option value="geography">Geography</option>
+<option value="history">History</option>
+<option value="economics">Economics</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+<input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" placeholder="Create password">
+</div>
+<button type="button" onclick="handleRegister()" class="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">Create Account</button>
+</form>
+</div>
+</div>
+</div>
+
+<!-- Main Dashboard -->
+<div id="dashboard" class="hidden">
+<!-- Top Navigation -->
+<nav class="bg-white shadow-lg border-b">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-16">
+<div class="flex items-center">
+<h1 class="text-2xl font-bold text-indigo-600">🎓BilaNation EduStream</h1>
+<div class="ml-8 hidden md:flex space-x-6">
+<button onclick="showSection('classes')" class="nav-btn text-gray-700 hover:text-indigo-600 px-3 py-2 font-medium">Classes</button>
+<button onclick="showSection('schedule')" class="nav-btn text-gray-700 hover:text-indigo-600 px-3 py-2 font-medium">Schedule</button>
+<button onclick="showSection('attendance')" class="nav-btn text-gray-700 hover:text-indigo-600 px-3 py-2 font-medium">Attendance</button>
+<button onclick="showSection('resources')" class="nav-btn text-gray-700 hover:text-indigo-600 px-3 py-2 font-medium">Resources</button>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<button class="text-gray-600 hover:text-indigo-600">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5v-12"></path>
+</svg>
+</button>
+<span class="notification-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+</div>
+<div class="flex items-center space-x-2">
+<div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold" id="userAvatar">S</div>
+<span class="text-gray-700 font-medium" id="userName">Student Name</span>
+</div>
+<button onclick="logout()" class="text-gray-600 hover:text-red-600">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+
+<!-- Live Classes Section -->
+<div id="classesSection" class="section-content">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<!-- Live Classes Header -->
+<div class="flex justify-between items-center mb-8">
+<div>
+<h2 class="text-3xl font-bold text-gray-900">Live Classes</h2>
+<p class="text-gray-600 mt-1">Join ongoing classes or browse available sessions</p>
+</div>
+<div class="teacher-only hidden">
+<button onclick="startNewClass()" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                            📹 Start New Class
+</button>
+</div>
+</div>
+
+<!-- Live Classes Grid -->
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+<!-- Live Class Card -->
+<div class="bg-white rounded-xl shadow-md card-hover border-l-4 border-red-500">
+<div class="p-6">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center">
+<div class="live-indicator w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+<span class="text-red-600 font-semibold text-sm">LIVE</span>
+</div>
+<span class="text-gray-500 text-sm">45 students</span>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-2">Mathematics - Algebra</h3>
+<p class="text-gray-600 mb-3">SSS 2 • Mr. Johnson</p>
+<p class="text-sm text-gray-500 mb-4">Started 15 minutes ago</p>
+<button onclick="joinClass('math-algebra')" class="w-full bg-red-600 text-white py-2 rounded-lg font-medium hover:bg-red-700 transition-colors">
+                                Join Class
+</button>
+</div>
+</div>
+
+<!-- Upcoming Class Card -->
+<div class="bg-white rounded-xl shadow-md card-hover border-l-4 border-blue-500">
+<div class="p-6">
+<div class="flex items-center justify-between mb-4">
+<span class="text-blue-600 font-semibold text-sm">UPCOMING</span>
+<span class="text-gray-500 text-sm">In 30 mins</span>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-2">English Literature</h3>
+<p class="text-gray-600 mb-3">JSS 3 • Mrs. Adams</p>
+<p class="text-sm text-gray-500 mb-4">2:30 PM - 3:30 PM</p>
+<button class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                Set Reminder
+</button>
+</div>
+</div>
+
+<!-- Recorded Class Card -->
+<div class="bg-white rounded-xl shadow-md card-hover border-l-4 border-green-500">
+<div class="p-6">
+<div class="flex items-center justify-between mb-4">
+<span class="text-green-600 font-semibold text-sm">RECORDED</span>
+<span class="text-gray-500 text-sm">2 hours ago</span>
+</div>
+<h3 class="text-xl font-semibold text-gray-900 mb-2">Physics - Motion</h3>
+<p class="text-gray-600 mb-3">SSS 1 • Dr. Williams</p>
+<p class="text-sm text-gray-500 mb-4">Duration: 1h 15m</p>
+<button onclick="watchRecording('physics-motion')" class="w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                                Watch Recording
+</button>
+</div>
+</div>
+</div>
+
+<!-- Class Filters -->
+<div class="bg-white rounded-xl shadow-md p-6 mb-8">
+<h3 class="text-lg font-semibold text-gray-900 mb-4">Filter Classes</h3>
+<div class="grid md:grid-cols-4 gap-4">
+<select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+<option>All Levels</option>
+<option>JSS 1</option>
+<option>JSS 2</option>
+<option>JSS 3</option>
+<option>SSS 1</option>
+<option>SSS 2</option>
+<option>SSS 3</option>
+</select>
+<select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+<option>All Subjects</option>
+<option>Mathematics</option>
+<option>English</option>
+<option>Physics</option>
+<option>Chemistry</option>
+<option>Biology</option>
+</select>
+<select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+<option>All Status</option>
+<option>Live</option>
+<option>Upcoming</option>
+<option>Recorded</option>
+</select>
+<button class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                            Apply Filters
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Class Room Interface -->
+<div id="classRoom" class="section-content hidden">
+<div class="h-screen bg-gray-900 flex flex-col">
+<!-- Class Header -->
+<div class="bg-gray-800 text-white p-4 flex justify-between items-center">
+<div class="flex items-center space-x-4">
+<button onclick="leaveClass()" class="text-red-400 hover:text-red-300">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+</svg>
+</button>
+<div>
+<h3 class="text-lg font-semibold" id="classTitle">Mathematics - Algebra</h3>
+<p class="text-gray-300 text-sm">SSS 2 • Mr. Johnson • 47 students</p>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex items-center">
+<div class="live-indicator w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+<span class="text-red-400 font-semibold">LIVE</span>
+</div>
+<span class="text-gray-300" id="classTimer">25:30</span>
+</div>
+</div>
+
+<!-- Main Class Content -->
+<div class="flex-1 flex">
+<!-- Video Area -->
+<div class="flex-1 bg-black relative">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="text-center text-white">
+<div class="w-32 h-32 bg-indigo-600 rounded-full flex items-center justify-center text-4xl font-bold mb-4 mx-auto">
+                                    MJ
+</div>
+<h3 class="text-xl font-semibold">Mr. Johnson</h3>
+<p class="text-gray-300">Teaching Mathematics</p>
+</div>
+</div>
+
+<!-- Video Controls -->
+<div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-4">
+<button id="muteBtn" onclick="toggleMute()" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-full">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M5 7h4l5-5v20l-5-5H5V7z"></path>
+</svg>
+</button>
+<button id="videoBtn" onclick="toggleVideo()" class="bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-full">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+</svg>
+</button>
+<button onclick="raiseHand()" class="bg-yellow-600 hover:bg-yellow-500 text-white p-3 rounded-full">
+                                ✋
+</button>
+</div>
+</div>
+
+<!-- Chat and Participants Panel -->
+<div class="w-80 bg-white border-l flex flex-col">
+<!-- Panel Tabs -->
+<div class="flex border-b">
+<button onclick="showChatPanel()" id="chatTab" class="flex-1 py-3 px-4 text-indigo-600 border-b-2 border-indigo-600 font-medium">Chat</button>
+<button onclick="showParticipantsPanel()" id="participantsTab" class="flex-1 py-3 px-4 text-gray-600 font-medium">Participants</button>
+</div>
+
+<!-- Chat Panel -->
+<div id="chatPanel" class="flex-1 flex flex-col">
+<div class="flex-1 p-4 overflow-y-auto" id="chatMessages">
+<div class="mb-4">
+<div class="text-xs text-gray-500 mb-1">10:30 AM</div>
+<div class="bg-gray-100 rounded-lg p-3">
+<div class="font-semibold text-sm text-indigo-600">Mr. Johnson</div>
+<div class="text-sm">Welcome everyone! Today we'll be covering quadratic equations.</div>
+</div>
+</div>
+<div class="mb-4">
+<div class="text-xs text-gray-500 mb-1">10:32 AM</div>
+<div class="bg-blue-50 rounded-lg p-3">
+<div class="font-semibold text-sm text-blue-600">Sarah M.</div>
+<div class="text-sm">Can you please explain the discriminant again?</div>
+</div>
+</div>
+</div>
+
+<!-- Chat Input -->
+<div class="p-4 border-t">
+<div class="flex space-x-2">
+<input type="text" id="chatInput" placeholder="Type your question..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm">
+<button onclick="sendMessage()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+
+<!-- Participants Panel -->
+<div id="participantsPanel" class="flex-1 p-4 hidden">
+<div class="mb-4">
+<h4 class="font-semibold text-gray-900 mb-2">Teachers (2)</h4>
+<div class="space-y-2">
+<div class="flex items-center space-x-3 p-2 rounded-lg bg-green-50">
+<div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">MJ</div>
+<div class="flex-1">
+<div class="font-medium text-sm">Mr. Johnson</div>
+<div class="text-xs text-gray-500">Host • Teaching</div>
+</div>
+<div class="w-2 h-2 bg-green-500 rounded-full"></div>
+</div>
+<div class="flex items-center space-x-3 p-2 rounded-lg">
+<div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">MA</div>
+<div class="flex-1">
+<div class="font-medium text-sm">Mrs. Adams</div>
+<div class="text-xs text-gray-500">Co-teacher</div>
+</div>
+<div class="w-2 h-2 bg-green-500 rounded-full"></div>
+</div>
+</div>
+</div>
+
+<div>
+<h4 class="font-semibold text-gray-900 mb-2">Students (45)</h4>
+<div class="space-y-1 max-h-64 overflow-y-auto">
+<div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50">
+<div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">SM</div>
+<div class="flex-1">
+<div class="font-medium text-sm">Sarah Miller</div>
+</div>
+<div class="text-yellow-500">✋</div>
+</div>
+<div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50">
+<div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">JD</div>
+<div class="flex-1">
+<div class="font-medium text-sm">John Davis</div>
+</div>
+</div>
+<!-- More students would be listed here -->
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Schedule Section -->
+<div id="scheduleSection" class="section-content hidden">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<h2 class="text-3xl font-bold text-gray-900 mb-8">Class Schedule</h2>
+
+<!-- Weekly Calendar -->
+<div class="bg-white rounded-xl shadow-md p-6 mb-8">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-semibold">This Week</h3>
+<div class="flex space-x-2">
+<button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Previous</button>
+<button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Next</button>
+</div>
+</div>
+
+<div class="grid grid-cols-7 gap-4">
+<div class="text-center font-semibold text-gray-700 py-2">Mon</div>
+<div class="text-center font-semibold text-gray-700 py-2">Tue</div>
+<div class="text-center font-semibold text-gray-700 py-2">Wed</div>
+<div class="text-center font-semibold text-gray-700 py-2">Thu</div>
+<div class="text-center font-semibold text-gray-700 py-2">Fri</div>
+<div class="text-center font-semibold text-gray-700 py-2">Sat</div>
+<div class="text-center font-semibold text-gray-700 py-2">Sun</div>
+
+<!-- Schedule items would be populated here -->
+<div class="min-h-32 border border-gray-200 rounded-lg p-2">
+<div class="text-sm font-medium text-gray-900 mb-1">15</div>
+<div class="bg-blue-100 text-blue-800 text-xs p-1 rounded mb-1">Math 9:00</div>
+<div class="bg-green-100 text-green-800 text-xs p-1 rounded">Physics 11:00</div>
+</div>
+<!-- More calendar cells... -->
+</div>
+</div>
+</div>
+</div>
+
+<!-- Attendance Section -->
+<div id="attendanceSection" class="section-content hidden">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<h2 class="text-3xl font-bold text-gray-900 mb-8">Attendance Records</h2>
+
+<div class="bg-white rounded-xl shadow-md p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xl font-semibold">Attendance Summary</h3>
+<select class="px-3 py-2 border border-gray-300 rounded-lg">
+<option>This Month</option>
+<option>Last Month</option>
+<option>This Term</option>
+</select>
+</div>
+
+<div class="grid md:grid-cols-3 gap-6 mb-8">
+<div class="text-center p-6 bg-green-50 rounded-lg">
+<div class="text-3xl font-bold text-green-600">92%</div>
+<div class="text-gray-600">Overall Attendance</div>
+</div>
+<div class="text-center p-6 bg-blue-50 rounded-lg">
+<div class="text-3xl font-bold text-blue-600">28</div>
+<div class="text-gray-600">Classes Attended</div>
+</div>
+<div class="text-center p-6 bg-red-50 rounded-lg">
+<div class="text-3xl font-bold text-red-600">3</div>
+<div class="text-gray-600">Classes Missed</div>
+</div>
+</div>
+
+<!-- Attendance Table -->
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead>
+<tr class="border-b">
+<th class="text-left py-3 px-4">Date</th>
+<th class="text-left py-3 px-4">Subject</th>
+<th class="text-left py-3 px-4">Teacher</th>
+<th class="text-left py-3 px-4">Duration</th>
+<th class="text-left py-3 px-4">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b hover:bg-gray-50">
+<td class="py-3 px-4">Dec 15, 2024</td>
+<td class="py-3 px-4">Mathematics</td>
+<td class="py-3 px-4">Mr. Johnson</td>
+<td class="py-3 px-4">1h 30m</td>
+<td class="py-3 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">Present</span></td>
+</tr>
+<tr class="border-b hover:bg-gray-50">
+<td class="py-3 px-4">Dec 14, 2024</td>
+<td class="py-3 px-4">English</td>
+<td class="py-3 px-4">Mrs. Adams</td>
+<td class="py-3 px-4">1h 15m</td>
+<td class="py-3 px-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">Absent</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Resources Section -->
+<div id="resourcesSection" class="section-content hidden">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<h2 class="text-3xl font-bold text-gray-900 mb-8">Learning Resources</h2>
+
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bg-white rounded-xl shadow-md p-6 card-hover">
+<div class="text-3xl mb-4">📚</div>
+<h3 class="text-xl font-semibold mb-2">Study Materials</h3>
+<p class="text-gray-600 mb-4">Access textbooks, notes, and study guides for all subjects.</p>
+<button class="text-indigo-600 font-medium hover:text-indigo-700">Browse Materials →</button>
+</div>
+
+<div class="bg-white rounded-xl shadow-md p-6 card-hover">
+<div class="text-3xl mb-4">🎥</div>
+<h3 class="text-xl font-semibold mb-2">Video Library</h3>
+<p class="text-gray-600 mb-4">Watch recorded lessons and educational videos.</p>
+<button class="text-indigo-600 font-medium hover:text-indigo-700">Watch Videos →</button>
+</div>
+
+<div class="bg-white rounded-xl shadow-md p-6 card-hover">
+<div class="text-3xl mb-4">📝</div>
+<h3 class="text-xl font-semibold mb-2">Assignments</h3>
+<p class="text-gray-600 mb-4">View and submit your homework and projects.</p>
+<button class="text-indigo-600 font-medium hover:text-indigo-700">View Assignments →</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+        let currentUser = null;
+        let currentSection = 'classes';
+        let classTimer = null;
+        let classStartTime = null;
+
+        // Authentication Functions
+        function handleLogin() {
+            const userType = document.getElementById('loginUserType').value;
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Simulate authentication
+            currentUser = {
+                type: userType,
+                email: email,
+                name: userType === 'student' ? 'Student Name' : userType === 'teacher' ? 'Teacher Name' : 'Admin Name'
+            };
+
+            document.getElementById('authModal').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+
+            // Update UI based on user type
+            updateUIForUserType();
+            showSection('classes');
+        }
+
+        function handleRegister() {
+            alert('Registration successful! Please login with your credentials.');
+            document.getElementById('registerTab').click();
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+
+        function updateUIForUserType() {
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            const teacherElements = document.querySelectorAll('.teacher-only');
+
+            userName.textContent = currentUser.name;
+            userAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+
+            if (currentUser.type === 'teacher') {
+                teacherElements.forEach(el => el.classList.remove('hidden'));
+                userAvatar.className = 'w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold';
+            } else if (currentUser.type === 'admin') {
+                userAvatar.className = 'w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-white font-semibold';
+            }
+        }
+
+        // Navigation Functions
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.remove('hidden');
+
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-600');
+                btn.classList.add('text-gray-700');
+            });
+
+            currentSection = sectionName;
+        }
+
+        // Class Functions
+        function joinClass(classId) {
+            document.getElementById('classesSection').classList.add('hidden');
+            document.getElementById('classRoom').classList.remove('hidden');
+
+            // Start class timer
+            classStartTime = new Date();
+            startClassTimer();
+
+            // Record attendance
+            recordAttendance(classId);
+        }
+
+        function leaveClass() {
+            document.getElementById('classRoom').classList.add('hidden');
+            document.getElementById('classesSection').classList.remove('hidden');
+
+            // Stop timer
+            if (classTimer) {
+                clearInterval(classTimer);
+                classTimer = null;
+            }
+        }
+
+        function startClassTimer() {
+            classTimer = setInterval(() => {
+                const now = new Date();
+                const elapsed = Math.floor((now - classStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+
+                document.getElementById('classTimer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function recordAttendance(classId) {
+            // Simulate attendance recording
+            console.log(`Attendance recorded for ${currentUser.name} in class ${classId}`);
+        }
+
+        function startNewClass() {
+            // Teacher function to start a new class
+            const subject = prompt('Enter subject name:');
+            const classLevel = prompt('Enter class level (JSS1-SSS3):');
+
+            if (subject && classLevel) {
+                alert(`New class "${subject}" for ${classLevel} has been started!`);
+                // In a real app, this would create a new live class session
+            }
+        }
+
+        function watchRecording(recordingId) {
+            alert(`Opening recorded class: ${recordingId}`);
+            // In a real app, this would open the video player
+        }
+
+        // Chat Functions
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (message) {
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'mb-4';
+                messageDiv.innerHTML = `
+<div class="text-xs text-gray-500 mb-1">${new Date().toLocaleTimeString()}</div>
+<div class="bg-blue-50 rounded-lg p-3">
+<div class="font-semibold text-sm text-blue-600">${currentUser.name}</div>
+<div class="text-sm">${message}</div>
+</div>
+                `;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                input.value = '';
+            }
+        }
+
+        function showChatPanel() {
+            document.getElementById('chatPanel').classList.remove('hidden');
+            document.getElementById('participantsPanel').classList.add('hidden');
+            document.getElementById('chatTab').className = 'flex-1 py-3 px-4 text-indigo-600 border-b-2 border-indigo-600 font-medium';
+            document.getElementById('participantsTab').className = 'flex-1 py-3 px-4 text-gray-600 font-medium';
+        }
+
+        function showParticipantsPanel() {
+            document.getElementById('participantsPanel').classList.remove('hidden');
+            document.getElementById('chatPanel').classList.add('hidden');
+            document.getElementById('participantsTab').className = 'flex-1 py-3 px-4 text-indigo-600 border-b-2 border-indigo-600 font-medium';
+            document.getElementById('chatTab').className = 'flex-1 py-3 px-4 text-gray-600 font-medium';
+        }
+
+        // Media Controls
+        function toggleMute() {
+            const btn = document.getElementById('muteBtn');
+            // Toggle mute state (visual feedback only in demo)
+            btn.classList.toggle('bg-red-600');
+        }
+
+        function toggleVideo() {
+            const btn = document.getElementById('videoBtn');
+            // Toggle video state (visual feedback only in demo)
+            btn.classList.toggle('bg-red-600');
+        }
+
+        function raiseHand() {
+            alert('Hand raised! The teacher will be notified.');
+        }
+
+        // Auth Modal Tab Switching
+        document.getElementById('loginTab').addEventListener('click', function() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            this.className = 'flex-1 py-2 px-4 rounded-md bg-white shadow-sm font-medium text-indigo-600';
+            document.getElementById('registerTab').className = 'flex-1 py-2 px-4 rounded-md font-medium text-gray-600';
+        });
+
+        document.getElementById('registerTab').addEventListener('click', function() {
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            this.className = 'flex-1 py-2 px-4 rounded-md bg-white shadow-sm font-medium text-indigo-600';
+            document.getElementById('loginTab').className = 'flex-1 py-2 px-4 rounded-md font-medium text-gray-600';
+        });
+
+        // Show/hide teacher fields in registration
+        document.getElementById('regUserType').addEventListener('change', function() {
+            const studentFields = document.getElementById('studentFields');
+            const teacherFields = document.getElementById('teacherFields');
+
+            if (this.value === 'teacher') {
+                studentFields.classList.add('hidden');
+                teacherFields.classList.remove('hidden');
+            } else {
+                teacherFields.classList.add('hidden');
+                studentFields.classList.remove('hidden');
+            }
+        });
+
+        // Chat input enter key
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show login modal on page load
+            document.getElementById('authModal').classList.remove('hidden');
+        });
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9625f1bd24a72068',t:'MTc1MzA1MTA1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
